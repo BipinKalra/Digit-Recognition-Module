@@ -13,17 +13,14 @@ while 1:
 
 		canny = cv2.Canny(frame,100,200)
 
-		blur = cv2.GaussianBlur(canny, (41, 41), 0)
+		_, thresh = cv2.threshold(canny, 127, 255, 0)
+		im2, contours, hir = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-		(minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(blur)
+		cv2.drawContours(canny, contours, -1, (0, 255, 0), 3)
 
-		image = frame.copy()
-
-		roi=image[maxLoc[1]-250:maxLoc[1]+250,maxLoc[0]-250:maxLoc[0]+250,2:2]
-			
 		cv2.imshow('cannyh', canny)
 
-		cv2.imshow('roi', roi)
+		cv2.imshow('im2', im2)
 
 	k = cv2.waitKey(5) & 0xFF
 	if k == 27:
