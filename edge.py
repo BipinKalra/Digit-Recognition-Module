@@ -9,18 +9,57 @@ while 1:
 
 	if ret: 
 		# Convert to HSV for simpler calculations
-		hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+		imgray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+		imgray = cv2.GaussianBlur(imgray, (5, 5), 0)
 
 		canny = cv2.Canny(frame,100,200)
 
-		_, thresh = cv2.threshold(canny, 127, 255, 0)
-		im2, contours, hir = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		# canny = cv2.bitwise_not(canny)
 
-		cv2.drawContours(canny, contours, -1, (0, 255, 0), 3)
 
-		cv2.imshow('cannyh', canny)
+		ret,thresh = cv2.threshold(canny,127,255,0)
+		im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
-		cv2.imshow('im2', im2)
+		# print(type(contours))
+		# print(len(contours))
+		if len(contours):
+			print("yo yo ")
+			print(contours[0])
+			print(contours[1])
+
+
+		cropped = []
+
+		for contour in contours:
+			min_x, min_y, max_x, max_y = 10000000, 10000000, -1, -1
+			for point in contour:
+				point = point.flatten()
+
+				x, y = point[:2]
+
+				if x < min_x:
+					min_x = x
+				if x > max_x:
+					max_x = x
+
+				if y < min_y:
+					min_y = y
+				if y > max_y:
+					max_y = y
+
+			cropped.append(imgray[min_x:max_x, min_y:max_y])
+
+		height, width = cropped[-1].shape[:2]
+		if height > 0 and width > 0:
+			cv2.imshow('cropped', cropped[-1])
+
+		# arr = 
+
+		cv2.drawContours(imgray, contours, -1, (0,255,0), 3)
+
+		cv2.imshow('gray', imgray)
+
 
 	k = cv2.waitKey(5) & 0xFF
 	if k == 27:
