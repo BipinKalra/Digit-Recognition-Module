@@ -1,3 +1,4 @@
 env/
-*.py[cow]
+*.py[poc]
+*.sw[poc]
 
